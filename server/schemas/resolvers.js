@@ -28,7 +28,7 @@ const resolvers = {
       // create token to store user's credentials
       const token = signToken(user);
 
-      return { token };
+      return { token, user };
     },
     addUser: async (parent, { username, email, password }) => {
       const user = await User.create({ username, email, password });
@@ -53,13 +53,13 @@ const resolvers = {
       throw new AuthenticationError('You need to be logged in!');
     },
 
-    saveBook: async (parent, { input }, context) => {
+    saveBook: async (parent,  {bookData}, context) => {
       if (context.user) {
         return User.findOneAndUpdate(
           { _id: context.user._id },
           {
             $addToSet: {
-              savedBooks: { input },
+              savedBooks: { bookData },
             },
           },
           {
