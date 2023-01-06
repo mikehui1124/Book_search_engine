@@ -1,6 +1,6 @@
 # Book_search_engine
 
-Challenge week 22
+	Book search engine allowing user to search and add books to his own booklist record, featuring MongoDB, user-authentication and React.js responsive UI
 
 GitHub repo: https://github.com/mikehui1124/Book_search_engineLinks to an external site.
 
