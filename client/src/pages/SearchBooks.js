@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'react-bootstrap';
-
+import { useMutation } from "@apollo/client";
 import Auth from '../utils/auth';
+import { SAVE_BOOK } from "../utils/mutations";
 import { searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
-import { useMutation } from '@apollo/client';
-import { SAVE_BOOK } from '../utils/mutations';
-
 
 const SearchBooks = () => {
-  // create state for holding returned google api data of books
+  // create state for holding returned google api data
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
 
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
-
+  // eslint-disable-next-line
   const [saveBook, { error }] = useMutation(SAVE_BOOK);
-
-
 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
@@ -54,7 +50,6 @@ const SearchBooks = () => {
 
       setSearchedBooks(bookData);
       setSearchInput('');
-      console.log(bookData);
     } catch (err) {
       console.error(err);
     }
@@ -63,25 +58,22 @@ const SearchBooks = () => {
   // create function to handle saving a book to our database
   const handleSaveBook = async (bookId) => {
     // find the book in `searchedBooks` state by the matching id
-   
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
-    
-    console.log(bookToSave.bookId, bookToSave.title, bookToSave.description, bookToSave.authors );
+
     // get token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
     if (!token) {
       return false;
     }
-    
+
     try {
-      const {data} = await saveBook({
-        variables: { input: {...bookToSave }}          
-       
+      // eslint-disable-next-line
+      const { data } = await saveBook({
+        variables: { book: { ...bookToSave } },
       });
 
-      console.log(data);
-      // if book successfully saved to user's account, add saved book id to state of savedBookId
+      // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     } catch (err) {
       console.error(err);
